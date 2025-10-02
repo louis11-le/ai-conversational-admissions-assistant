@@ -1,6 +1,9 @@
-# NIT6150 Chat Assistant
+# AI Conversational Admissions Assistant
 
 A conversational AI system designed to help university staff and students get quick, accurate answers to their questions about university services, policies, and procedures.
+
+> **Private Repository Notice**
+> This is an ongoing private project containing proprietary and confidential code. This repository is restricted to authorized personnel only and is not intended for public access or distribution.
 
 ## What This System Does
 
@@ -70,6 +73,27 @@ This document explains:
 - **Frontend**: Next.js, React, TypeScript, Tailwind CSS
 - **AI/ML**: OpenAI GPT models, vector embeddings, semantic search
 - **Infrastructure**: Docker, Redis for session management
+
+## Planned Enhancements
+
+### TODO: Vector Database Migration
+- **Current**: ChromaDB for vector search and similarity matching
+- **Target**: Migrate to Weaviate for improved search capabilities
+- **Benefits**:
+  - Weaviate's hybrid search combines vector search with keyword-based BM25F search
+  - Provides more comprehensive and relevant results by leveraging both semantic understanding and exact keyword matching
+  - Better handling of exact phrase matches and keyword-based queries
+  - Improved performance for mixed query types (semantic + keyword)
+
+### TODO: Performance Evaluation System
+- **Current**: Basic observability through structured logging and metrics collection
+- **Target**: Implement comprehensive performance evaluation framework
+- **Components**:
+  - Automated performance benchmarks for search accuracy and response quality
+  - User experience metrics (response time, satisfaction scoring, error rates)
+  - System performance monitoring (throughput, latency, resource utilization)
+  - A/B testing framework for feature validation and optimization
+  - Automated regression testing for search quality and conversation flows
 
 ## Support
 
