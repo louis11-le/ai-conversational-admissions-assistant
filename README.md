@@ -5,6 +5,9 @@ A conversational AI system designed to help university staff and students get qu
 > **Private Repository Notice**
 > This is an ongoing private project containing proprietary and confidential code. This repository is restricted to authorized personnel only and is not intended for public access or distribution.
 
+<img src="public/images/chat-screen-1.png" width="600" alt="Chat Interface" />
+<img src="public/images/chat-screen-b.png" width="600" alt="Chat Interface Features" />
+
 ## What This System Does
 
 The chat assistant provides instant, helpful responses to questions about:
