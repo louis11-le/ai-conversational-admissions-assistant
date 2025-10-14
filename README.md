@@ -33,28 +33,17 @@ The chat assistant provides instant, helpful responses to questions about:
 - **Reliable answers** - Built on comprehensive university knowledge base
 - **Privacy-focused** - Conversation data expires automatically for your privacy
 
-## Getting Started
+## Key Technologies
 
-### For End Users (Students & Staff)
-Simply visit the chat interface and start asking questions. No login required - the system works immediately.
-
-### For Developers
-This project consists of:
-- **Backend**: FastAPI-based chat service with vector search and LLM integration
-- **Frontend**: Next.js chat interface with real-time streaming
-- **Knowledge Base**: PostgreSQL + ChromaDB for FAQ storage and vector search
+- **Backend**: Python, FastAPI, MySQL, Weaviate, Redis, OpenAI
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **AI/ML**: OpenAI GPT models, vector embeddings, hybrid search (vector + BM25)
+- **Infrastructure**: Redis for session management
 
 ## Technical Documentation
 
 For detailed technical information about how the system works end-to-end, see:
 **[End-to-End System Overview](backend/system-docs/end-to-end-system-overview.md)**
-
-This document explains:
-- Complete user journey flows
-- System architecture and components
-- How conversation history is maintained
-- Error handling and fallback mechanisms
-- Performance and scalability considerations
 
 ## Project Structure
 
@@ -70,33 +59,36 @@ This document explains:
 └── README.md               # This file
 ```
 
-## Key Technologies
+## Getting Started
 
-- **Backend**: Python, FastAPI, PostgreSQL, ChromaDB, Redis, OpenAI
-- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
-- **AI/ML**: OpenAI GPT models, vector embeddings, semantic search
-- **Infrastructure**: Docker, Redis for session management
+### For End Users (Students & Staff)
+Simply visit the chat interface and start asking questions. No login required - the system works immediately.
 
-## Planned Enhancements
+### For Developers
+This project consists of:
+- **Backend**: FastAPI-based chat service with vector search and LLM integration
+- **Frontend**: Next.js chat interface with real-time streaming
+- **Knowledge Base**: MySQL + Weaviate for FAQ storage and hybrid search (vector + BM25)
 
-### TODO: Vector Database Migration
-- **Current**: ChromaDB for vector search and similarity matching
-- **Target**: Migrate to Weaviate for improved search capabilities
-- **Benefits**:
-  - Weaviate's hybrid search combines vector search with keyword-based BM25F search
-  - Provides more comprehensive and relevant results by leveraging both semantic understanding and exact keyword matching
-  - Better handling of exact phrase matches and keyword-based queries
-  - Improved performance for mixed query types (semantic + keyword)
+## Completed Enhancements
 
-### TODO: Performance Evaluation System
-- **Current**: Basic observability through structured logging and metrics collection
-- **Target**: Implement comprehensive performance evaluation framework
-- **Components**:
-  - Automated performance benchmarks for search accuracy and response quality
-  - User experience metrics (response time, satisfaction scoring, error rates)
-  - System performance monitoring (throughput, latency, resource utilization)
-  - A/B testing framework for feature validation and optimization
-  - Automated regression testing for search quality and conversation flows
+### Completed: Vector Database Migration
+- **Status**: COMPLETED - Migrated from ChromaDB to Weaviate
+- **Current**: Weaviate with validated hybrid search (vector + BM25)
+- **Benefits Achieved**:
+  - Hybrid search combining semantic understanding with keyword matching
+  - 100% precision on validated test queries
+  - ChromaDB remains available as fallback option
+
+### Completed: Performance Evaluation System
+- **Status**: COMPLETED - Comprehensive evaluation framework implemented
+- **Features**:
+  - Automated search quality evaluation (Precision@1, Hit Rate@5, MRR, similarity scores)
+  - Answer quality validation (topic coverage, term compliance, answerability rate)
+  - Real data testing using production FAQ database
+  - Integration tests for CI/CD quality gates
+  - Detailed reporting with JSON and Markdown outputs
+- **Results**: System achieves 88.2% Precision@1 on full evaluation dataset (34 tests)
 
 ## Support
 

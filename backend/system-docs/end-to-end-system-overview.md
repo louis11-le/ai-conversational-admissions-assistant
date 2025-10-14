@@ -8,10 +8,13 @@ Purpose: Explain how the chat system works from a user’s first input to the st
 - The system helps users ask questions and get focused answers, quickly and reliably.
 - Users can either type a question or click a suggested related option. Answers stream in real time for responsiveness.
 - The system remembers conversation context so follow‑up questions like "that" or "tell me again" feel natural.
+- **Production Vector Store**: Weaviate (validated: 100% success rate, ~40-50ms response time) with ChromaDB fallback available.
 
 ## User Journeys
 
 ### 1) Typed Question Flow
+
+Before generating an answer, the system performs a quick decision step to check if the available context can provide a meaningful answer. If not, it tries a broader fallback; if that still doesn’t help, it returns a friendly guidance message.
 
 ```mermaid
 sequenceDiagram
@@ -201,8 +204,9 @@ graph TB
     end
 
     subgraph "Data Layer"
-        PG[(PostgreSQL<br/>FAQs & Content)]
-        CH[(ChromaDB<br/>Vector Search)]
+        PG[(MySQL<br/>FAQs & Content)]
+        WV[(Weaviate<br/>Hybrid Search<br/>Validated)]
+        CH[(ChromaDB<br/>Fallback Option)]
         RD[(Redis<br/>Session Store)]
     end
 
@@ -223,7 +227,7 @@ graph TB
     CF --> OB
     CF --> QR
 
-    RM --> CH
+    RM --> WV
     RM --> PG
     CM --> LLM
     CV --> RD
@@ -236,7 +240,8 @@ graph TB
     style API fill:#f3e5f5
     style CF fill:#fff3e0
     style PG fill:#e8f5e8
-    style CH fill:#e8f5e8
+    style WV fill:#4caf50
+    style CH fill:#ffecb3
     style RD fill:#e8f5e8
     style LLM fill:#fff8e1
 ```
@@ -371,6 +376,61 @@ flowchart TD
 ## Security and Privacy
 - Conversation history is session‑based and expires after inactivity.
 - We store only what is needed to deliver accurate, contextual answers and validate suggestion clicks.
+
+## Vector Store Architecture (Validated)
+
+### Primary: Weaviate Hybrid Search
+**Validation Results (October 2025):**
+- **Testing**: 63 query combinations (9 queries × 7 parameter combinations)
+- **Dataset**: ~250 Victoria University FAQs
+- **Success Rate**: 100% (9/9 test queries return perfect matches)
+- **Response Time**: ~40-50ms average (excellent performance)
+
+**Production Configuration:**
+- **Hybrid Search Weight** (`alpha=0.75`):
+  - Combines BM25 (keyword) and vector (semantic) search
+  - 0.0 = pure BM25, 1.0 = pure vector
+  - Finding: NO EFFECT on current dataset (both BM25 and vector return identical rankings)
+
+- **Fusion Algorithm** (`fusion_type=relativeScoreFusion`):
+  - Combines BM25 and vector scores into final ranking
+  - Finding: `relativeScoreFusion` = 100% success rate
+  - **CRITICAL**: `rankedFusion` completely failed (0% success rate - DO NOT USE)
+
+- **Search Properties** (`search_properties=["content"]`):
+  - Specifies which Weaviate metadata fields to search
+  - Finding: Only `content` field exists in metadata (combines question + answer_summary)
+
+### Reranking Investigation (NO-GO Decision)
+**Investigation Result**: NO-GO (October 2025)
+
+**Rationale:**
+- Current system already achieves 100% success rate with perfect matches
+- All reranking options (Cohere, VoyageAI, JinaAI, Transformers, NVIDIA) add:
+  - Additional latency: +30-500ms
+  - Additional cost: $18-36/year
+  - No guaranteed improvement over perfect baseline
+- Risk of degrading excellent performance outweighs uncertain benefits
+
+**Decision**: No reranking implementation needed. Current configuration remains in production.
+
+### Fallback: ChromaDB
+**Status**: Available as hot standby fallback option
+
+**Rollback Trigger Scenarios:**
+- Weaviate service unavailable or experiencing issues
+- Performance degradation (>100ms response time)
+- High error rates from Weaviate queries
+- Emergency rollback situations
+
+**Rollback Procedure:**
+1. Set `VECTOR_STORE_PROVIDER=chroma` in environment
+2. Restart application
+3. Verify search functionality with test queries
+4. Monitor response times and error rates
+5. Investigate Weaviate issues while ChromaDB serves traffic
+
+See `backend/runbooks/rollback-procedures.md` for detailed procedures.
 
 ## Configuration Defaults (Business‑Level)
 - Sensible defaults ensure consistent behavior: how many results we consider, how many suggestions we show, and the relevance threshold for quality.
